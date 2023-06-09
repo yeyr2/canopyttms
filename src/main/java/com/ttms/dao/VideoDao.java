@@ -134,4 +134,11 @@ public class VideoDao {
         //videoId
         return ts.deleteTicketByStudioIdOrByVideoId(id);
     }
+
+    public List<Video> getVideoByName(String videoName) {
+        LambdaQueryWrapper<Video> wrapper = new LambdaQueryWrapper<>(Video.class);
+        wrapper.eq(Video::getName,videoName);
+
+        return Db.list(wrapper);
+    }
 }

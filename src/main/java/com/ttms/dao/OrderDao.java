@@ -8,6 +8,7 @@ import com.ttms.enums.TicketStatus;
 import com.ttms.pojo.Order;
 import com.ttms.pojo.Plan;
 import com.ttms.pojo.Ticket;
+import com.ttms.tools.TimeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,4 +77,24 @@ public class OrderDao {
         }
 
     }
+
+    public Long getCancelOrder(Long start, Long end) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>(Order.class);
+        wrapper.eq(Order::getOrderStatus,OrderStatus.CancelOrder);
+        if(start != null && end != null){
+            String startStr = TimeUtil.getFormatByDate(start);
+            String endStr = TimeUtil.getFormatByDate(end);
+            wrapper.ge(Order::getTime,startStr).le(Order::getTime,endStr);
+        }
+
+        return Db.count(wrapper);
+    }
+
+    public Long getCancelOrderByPlanId(Long id){
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>(Order.class);
+        wrapper.eq(Order::getOrderStatus,OrderStatus.CancelOrder).eq(Order::getId,id);
+
+        return Db.count(wrapper);
+    }
+
 }

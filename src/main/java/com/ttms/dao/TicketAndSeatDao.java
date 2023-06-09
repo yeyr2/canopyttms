@@ -310,4 +310,39 @@ public class TicketAndSeatDao {
         }
         return true;
     }
+
+    public FinancialStatistics getTicketByPlanIds(List<Plan> plans) {
+        List<Long> list = new ArrayList<>();
+        for(Plan plan : plans){
+            list.add(plan.getId());
+        }
+
+        LambdaQueryWrapper<Ticket> wrapper = new LambdaQueryWrapper<>(Ticket.class);
+        wrapper.in(Ticket::getPlanId,list).ne(Ticket::getOid,0);
+        List<Ticket> tickets = Db.list(wrapper);
+
+        Double sales = 0.0;
+        Integer NumOfTicket = 0;
+        Integer used = 0;
+        for(Plan plan : plans){
+            for(Ticket ticket : tickets){
+                if(ticket.getPlanId().equals(plan.getId())){
+                    if(ticket.getStatus() == TicketStatus.Used){
+                        used++;
+                    }
+                    sales += plan.getPrice();
+                    NumOfTicket++;
+                }
+            }
+        }
+
+
+        FinancialStatistics financialStatistics = new FinancialStatistics();
+        financialStatistics.setBoxOfficeReceipts(sales);
+        financialStatistics.setBoxOfficeQuantity(NumOfTicket);
+        financialStatistics.setNumberViewers(used);
+
+
+        return new FinancialStatistics();
+    }
 }

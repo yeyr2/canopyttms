@@ -23,9 +23,13 @@ public class PlanDao {
      * 过期不读
      * @return
      */
-    public List<Plan> getPlan() {
+    public List<Plan> getPlan(Long start, Long end) {
         LambdaQueryWrapper<Plan> wrapper = new LambdaQueryWrapper<>(Plan.class);
-        wrapper.orderByDesc(Plan::getReleaseTime).last("limit "+20);
+        wrapper.orderByDesc(Plan::getReleaseTime);
+//        wrapper.last("limit "+20);
+        if(start != null && end != null){
+            wrapper.ge(Plan::getReleaseTime,start).le(Plan::getReleaseTime,end);
+        }
 
         return Db.list(wrapper);
     }
@@ -50,6 +54,13 @@ public class PlanDao {
         }
 
         return Db.list(wrapper);
+    }
+
+    public Plan getPlanByVideoId(Long videoId) {
+        LambdaQueryWrapper<Plan> wrapper = new LambdaQueryWrapper<>(Plan.class);
+        wrapper.eq(Plan::getVideoId,videoId);
+
+        return Db.getOne(wrapper);
     }
 
     public Plan getPlanById(Long id) {

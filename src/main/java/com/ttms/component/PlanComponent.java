@@ -19,7 +19,7 @@ public class PlanComponent {
     private PlanDao planDao;
 
     public ResponseEntity<Response> getPlan() {
-        List<Plan> plans = planDao.getPlan();
+        List<Plan> plans = planDao.getPlan(null,null);
 
         Response response = new Response();
         response.setValue(plans);
