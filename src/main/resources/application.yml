@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.100.16.28:3306/ttms?serverTimezone=GMT%2B8&characterEncoding=utf-8&userSSL=false
     username: root
-    password: 2042054014
+    password: root
     druid:
       initialSize: 5
       minIdle: 5
