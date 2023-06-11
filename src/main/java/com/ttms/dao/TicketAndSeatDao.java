@@ -343,6 +343,13 @@ public class TicketAndSeatDao {
         financialStatistics.setNumberViewers(used);
 
 
-        return new FinancialStatistics();
+        return financialStatistics;
+    }
+
+    public List<Ticket> getSoleTicketByPlanId(Long id) {
+        LambdaQueryWrapper<Ticket> wrapper = new LambdaQueryWrapper<>(Ticket.class);
+        wrapper.eq(Ticket::getPlanId,id).in(Ticket::getStatus,TicketStatus.Used,TicketStatus.Sold,TicketStatus.ExpiredSole);
+
+        return Db.list(wrapper);
     }
 }

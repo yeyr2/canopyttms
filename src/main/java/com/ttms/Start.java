@@ -26,18 +26,26 @@ public class Start {
 
         TicketAndSeatDao ticketAndSeatDao = new TicketAndSeatDao();
         OrderDao orderDao = new OrderDao();
+
         // 启动sole轮询器
         exception.scheduleAtFixedRate(()->{
-            System.out.println("select * from ticket and order where time > 10*60");
+            System.out.println("检测未支付的票");
             Long time = Instant.now().toEpochMilli();
             try {
-                // 检测未支付的票
                 ticketAndSeatDao.selectAndUpdateTicketByLock(time);
-                // 检测过期的演出计划以及对应的票和id
-                orderDao.selectIsExpired();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }, 60*10,60*10, TimeUnit.SECONDS);
+
+        exception.scheduleAtFixedRate(()->{
+            System.out.println("检测过期的演出计划以及对应的票和id");
+            Long time = Instant.now().toEpochMilli();
+            try {
+                orderDao.selectIsExpired();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, 30*10,60*10, TimeUnit.SECONDS);
     }
 }

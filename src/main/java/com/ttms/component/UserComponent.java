@@ -4,6 +4,8 @@ import com.ttms.dao.UserDao;
 import com.ttms.enums.PermissionLevelEnum;
 import com.ttms.pojo.Response;
 import com.ttms.pojo.User;
+import com.ttms.tools.Sha256Util;
+import com.ttms.tools.StringUtil;
 import com.ttms.tools.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,12 @@ public class UserComponent {
     private UserDao userDao;
 
     public ResponseEntity<Response> login(User user){
+        if(user == null || user.getUsername() == null || user.getPassword() == null){
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+        user.setUsername(StringUtil.removeSpaces(user.getUsername()));
+        user.setPassword(Sha256Util.getSHA256Str(user.getPassword()));
+
         User newUser = userDao.judgeUser(user.getUsername(),null);
         if ( newUser == null) {
             return ResponseEntityComponent.User_Not_Exist;
@@ -31,6 +39,15 @@ public class UserComponent {
     }
 
     public ResponseEntity<Response> register(User user) {
+        if(user == null || user.getUsername() == null || user.getPassword() == null){
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+        user.setUsername(StringUtil.removeSpaces(user.getUsername()));
+        if(user.getPassword().contains(" ")){
+            return ResponseEntityComponent.Password_Err("设置密码不允许出现空格");
+        }
+        user.setPassword(Sha256Util.getSHA256Str(user.getPassword()));
+
         if(userDao.judgeUser(user.getUsername(),null) != null) {
             return ResponseEntityComponent.User_Exist;
         }
@@ -43,7 +60,7 @@ public class UserComponent {
             return ResponseEntityComponent.Create_Failed("user");
         }
 
-        Response response = new Response().setMsg("creat user successes,password:"+user.getPassword());
+        Response response = new Response().setMsg("creat user success,user:"+user.getUsername());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -118,8 +135,8 @@ public class UserComponent {
             return ResponseEntityComponent.PROPERTIES_ERR;
         }
 
-        String replace = pwd.replace(" ", "");
-        if ("".equals(replace) || replace.length() < 6) {
+        String password = StringUtil.removeSpaces(pwd);
+        if ("".equals(password) || password.length() < 6) {
             return ResponseEntityComponent.PROPERTIES_ERR;
         }
 

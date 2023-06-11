@@ -56,11 +56,11 @@ public class PlanDao {
         return Db.list(wrapper);
     }
 
-    public Plan getPlanByVideoId(Long videoId) {
+    public List<Plan> getPlanByVideoId(Long videoId) {
         LambdaQueryWrapper<Plan> wrapper = new LambdaQueryWrapper<>(Plan.class);
         wrapper.eq(Plan::getVideoId,videoId);
 
-        return Db.getOne(wrapper);
+        return Db.list(wrapper);
     }
 
     public Plan getPlanById(Long id) {

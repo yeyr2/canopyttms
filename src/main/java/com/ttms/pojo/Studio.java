@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ttms.enums.SeatStatus;
+import com.ttms.tools.StringUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -42,6 +43,10 @@ public class Studio {
     }
 
     public boolean verify(String type) {
+        if(this.getName() == null){
+            return false;
+        }
+        this.setName(StringUtil.removeSpaces(this.getName()));
         switch (type) {
             case "insert":
                 this.setId(null);

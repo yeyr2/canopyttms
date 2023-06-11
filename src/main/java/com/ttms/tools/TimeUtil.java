@@ -14,6 +14,7 @@ public class TimeUtil extends ch.qos.logback.core.util.TimeUtil {
      * @return
      */
     public static long getTodayStart(long timestamp) {
+        timestamp += 8 * 60 * 60 * 1000;
         return timestamp - (timestamp % (24 * 60 * 60 * 1000)) - 8 * 60 * 60 * 1000;
     }
 

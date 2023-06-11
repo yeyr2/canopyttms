@@ -100,11 +100,10 @@ public class StudioController {
             return ResponseEntityComponent.Conflict("name");
         }
 //        try{
-            boolean status = sd.insertStudio(studio);
+        boolean status = sd.insertStudio(studio);
 //        }catch (Exception e){
 //            return ResponseEntityComponent.Create_Failed("studio");
 //        }
-
 
         Response response =  new Response();
         response.setValue(studio.getId());

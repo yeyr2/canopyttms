@@ -62,8 +62,14 @@ public class OrderDao {
                 oids.add(ticket.getOid());
             }
 
+            // 以售卖的过期
+            LambdaUpdateWrapper<Ticket> soleToExpiredSole = new LambdaUpdateWrapper<>(Ticket.class);
+            soleToExpiredSole.eq(Ticket::getPlanId,plan.getId()).in(Ticket::getStatus,TicketStatus.Sold);
+            soleToExpiredSole.set(Ticket::getStatus, TicketStatus.ExpiredSole);
+            Db.update(soleToExpiredSole);
+
             LambdaUpdateWrapper<Ticket> wrapper = new LambdaUpdateWrapper<>(Ticket.class);
-            wrapper.eq(Ticket::getPlanId,plan.getId()).notIn(Ticket::getStatus,TicketStatus.Expired,TicketStatus.Used);
+            wrapper.eq(Ticket::getPlanId,plan.getId()).notIn(Ticket::getStatus,TicketStatus.Expired,TicketStatus.Used,TicketStatus.Sold);
             wrapper.set(Ticket::getStatus, TicketStatus.Expired);
             Db.update(wrapper);
         }
@@ -92,7 +98,7 @@ public class OrderDao {
 
     public Long getCancelOrderByPlanId(Long id){
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>(Order.class);
-        wrapper.eq(Order::getOrderStatus,OrderStatus.CancelOrder).eq(Order::getId,id);
+        wrapper.eq(Order::getOrderStatus,OrderStatus.CancelOrder).eq(Order::getPlanId,id);
 
         return Db.count(wrapper);
     }

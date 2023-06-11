@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ttms.enums.PermissionLevelEnum;
+import com.ttms.tools.StringUtil;
 import lombok.Data;
 
 @TableName("user")
@@ -36,7 +37,7 @@ public class User {
     private Integer isDeleted;
 
     public boolean verify(){
-        this.setUsername(this.getUsername().replace(" ",""));
+        this.setUsername(StringUtil.removeSpaces(this.getUsername()));
         if ("".equals(this.getUsername())) {
             return false;
         }
@@ -45,6 +46,7 @@ public class User {
             return false;
         }
 
+        this.setSex(StringUtil.removeSpaces(this.getSex()));
         if(!("男".equals(this.sex) || "女".equals(this.sex))){
             return false;
         }

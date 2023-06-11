@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.List;
 
 @Component
@@ -39,7 +40,8 @@ public class PlanComponent {
     public ResponseEntity<Response> getPlan(Long cur,Long videoId,Boolean isAdmin) throws ParseException {
 
         long start = TimeUtil.getTodayStart(cur);
-        long end = TimeUtil.computeStartOfNextDay(cur);
+//        long end = TimeUtil.computeStartOfNextDay(cur);
+        long end = Instant.now().plusSeconds(60 * 60 * 24 * 5).toEpochMilli();
 
         List<Plan> plans = planDao.getPlanByVideoId(videoId, start,end,isAdmin);
         Response response = new Response();

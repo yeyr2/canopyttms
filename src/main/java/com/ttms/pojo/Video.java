@@ -50,13 +50,13 @@ public class Video {
     @TableLogic
     private Integer isDeleted;
 
-
     public boolean verify(String type,String time) throws ParseException {
         if ("insert".equals(type)){
             //todo : 文件上传
             if(this.name == null || this.imgUrl == null ) {
                 return false;
             }
+            this.setName(StringUtil.removeSpaces(this.getName()));
             if(time == null) {
                 this.releaseTime = System.currentTimeMillis();
             }else{

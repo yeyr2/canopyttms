@@ -41,4 +41,13 @@ public class StringUtil {
 
         return list;
     }
+
+    public static String removeSpaces(String str) {
+        if(str == null || "".equals(str)){
+            return "";
+        }
+
+        str = str.replace(" ","");
+        return str;
+    }
 }

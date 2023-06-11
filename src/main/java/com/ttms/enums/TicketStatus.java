@@ -8,7 +8,8 @@ public enum TicketStatus {
     Locking(2,"锁定"),
     Expired(3,"已过期"),
     None(4,"没有该位置"),
-    Used(5,"已使用");
+    Used(5,"已使用"),
+    ExpiredSole(6,"已购但过期");
 
     @EnumValue
     private Integer id;

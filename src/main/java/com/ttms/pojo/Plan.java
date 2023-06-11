@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ttms.tools.StringUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -34,10 +35,11 @@ public class Plan {
             if(studio == null || price == null || video == null ) {
                 return false;
             }
-            studio = studio.replace(" ","");
-            video = video.replace(" ","");
-            language = language.replace(" ","");
-            if(language == null) {
+            studio = StringUtil.removeSpaces(studio);
+            video = StringUtil.removeSpaces(video);
+            if (language != null){
+                language = StringUtil.removeSpaces(language);
+            }else{
                 language = "未知";
             }
         }

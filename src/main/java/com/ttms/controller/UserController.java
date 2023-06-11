@@ -27,14 +27,12 @@ public class UserController {
      */
     @PostMapping(value = "/login")
     public ResponseEntity<Response> Login(@RequestBody User user) {
-        user.setPassword(Sha256Util.getSHA256Str(user.getPassword()));
 
         return userComponent.login(user);
     }
 
     @PostMapping(value = "/register")
     public ResponseEntity<Response> Register(@RequestBody User user) {
-        user.setPassword(Sha256Util.getSHA256Str(user.getPassword()));
 
         return userComponent.register(user);
     }

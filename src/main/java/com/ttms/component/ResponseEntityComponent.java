@@ -27,6 +27,10 @@ public class ResponseEntityComponent {
     public static final ResponseEntity<Response> Seat_Fixed =
             new ResponseEntity<>(new Response("err : 座位对应的票已被售出。"),HttpStatus.OK);
 
+    public static ResponseEntity<Response> Password_Err(String str) {
+        return new ResponseEntity<>(new Response("密码错误："+str),HttpStatus.OK);
+    }
+
     public static ResponseEntity<Response> Expired(String name) {
         return new ResponseEntity<>(new Response("err : "+name+"失去了有效性."),HttpStatus.OK);
     }
@@ -63,6 +67,10 @@ public class ResponseEntityComponent {
 
     public static ResponseEntity<Response> Wrong_Format(String type) {
         return new ResponseEntity<>(new Response("err: "+type+" format error."),HttpStatus.OK);
+    }
+
+    public static ResponseEntity<Response> Not_Found(String s) {
+        return new ResponseEntity<>(new Response("err: not found "+s),HttpStatus.OK);
     }
 
     public static class ResponseController {
