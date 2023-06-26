@@ -13,22 +13,18 @@ import java.io.IOException;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOrigins("*")
-//                .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowCredentials(true)
-//                .maxAge(3600)
-//                .allowedHeaders("*");
-//    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/greeting-javaconfig").allowedOrigins("*");
+                registry.addMapping("/**")
+                        .allowCredentials(true)
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS")
+                        .maxAge(3600)
+                        .allowedHeaders("*");
             }
         };
     }

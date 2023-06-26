@@ -5,7 +5,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     # 配置连接数据库的各个信息
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://{ip}:3306/ttms?serverTimezone=GMT%2B8&characterEncoding=utf-8&userSSL=false
+    url: jdbc:mysql://47.100.16.28:3306/ttms?serverTimezone=GMT%2B8&characterEncoding=utf-8&userSSL=false
     username: root
     password: root
     druid:
@@ -53,4 +53,3 @@ mybatis-plus:
       id-type: auto
   type-aliases-package: com.ttms.pojo
   mapper-locations: classpath*:com/ttms/**/*.xml
-

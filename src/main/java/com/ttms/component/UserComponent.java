@@ -2,6 +2,7 @@ package com.ttms.component;
 
 import com.ttms.dao.UserDao;
 import com.ttms.enums.PermissionLevelEnum;
+import com.ttms.pojo.Mail;
 import com.ttms.pojo.Response;
 import com.ttms.pojo.User;
 import com.ttms.tools.Sha256Util;
@@ -12,11 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class UserComponent {
 
+    public static ConcurrentHashMap<Long,String> verificationCode__tmp;
+    public static ConcurrentHashMap<Long,String> changeEmail__tmp;
     @Autowired
     private UserDao userDao;
 
@@ -81,6 +87,7 @@ public class UserComponent {
         user.setAdmin(null);
         user.setPassword(null);
         user.setBalance(null);
+        user.setEmail(null);
         //验证是否有非法信息
         if (!user.verify()){
             return ResponseEntityComponent.PROPERTIES_ERR;
@@ -100,7 +107,8 @@ public class UserComponent {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<Response> changeUserLevel(Long uid,PermissionLevelEnum level) {
+    public ResponseEntity<Response>
+    changeUserLevel(Long uid,PermissionLevelEnum level) {
         if(uid == null || uid <= 0){
             return ResponseEntityComponent.ID_ERR;
         }
@@ -136,11 +144,11 @@ public class UserComponent {
         }
 
         String password = StringUtil.removeSpaces(pwd);
-        if ("".equals(password) || password.length() < 6) {
+        if (password.length() < 6) {
             return ResponseEntityComponent.PROPERTIES_ERR;
         }
 
-        if(!userDao.changePassword(uid,pwd)){
+        if(!userDao.changePassword(uid,Sha256Util.getSHA256Str(pwd))){
             return ResponseEntityComponent.Update_Failed("user password");
         }
 
@@ -154,11 +162,89 @@ public class UserComponent {
             return ResponseEntityComponent.PROPERTIES_ERR;
         }
 
-        List<User> userByName = userDao.getUserByName(name,isAdmin);
+        List<User> userByName = userDao.getUserByLikeName(name,isAdmin);
 
         Response response = new Response();
         response.setValue(userByName);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> SendVerificationCode(String email) throws MessagingException, UnsupportedEncodingException {
+        email = StringUtil.removeSpaces(email);
+
+        if (!Mail.formatCheck(email)) {
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+
+        // 获取用户信息
+        User user = userDao.getUserByEmail(email);
+        if(user == null){
+            return ResponseEntityComponent.User_Exist;
+        }
+
+        new MailComponent().sendMail(email,null,user,"code");
+
+        Response response = new Response();
+        response.setValue(true);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> changeUserPwdByEmail(String email, String yzm, String password) throws MessagingException, UnsupportedEncodingException {
+        if(email == null || email.isEmpty() || yzm == null || yzm.length() != 5){
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+
+        // 获取用户信息
+        User user = userDao.getUserByEmail(email);
+        if(user == null){
+            return ResponseEntityComponent.User_Exist;
+        }
+
+        String code = verificationCode__tmp.get(user.getId()).substring(0,5);
+        verificationCode__tmp.remove(user.getId());
+
+        if(!code.equals(yzm)){
+            return ResponseEntityComponent.verificationCode_Err();
+        }
+
+        if(password == null || password.isEmpty()){
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+        password = StringUtil.removeSpaces(password);
+        if (password.length() < 6) {
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+
+        if(!userDao.changePassword(user.getId(),Sha256Util.getSHA256Str(password))){
+            return ResponseEntityComponent.Update_Failed("user password");
+        }
+        new MailComponent().sendMail(email,password,user,"password");
+
+        Response response = new Response();
+        response.setValue(true);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> changeEmail(String username,String email, String yzm) throws MessagingException, UnsupportedEncodingException {
+        if(email == null || email.isEmpty() || yzm == null || yzm.length() != 5){
+            return ResponseEntityComponent.PROPERTIES_ERR;
+        }
+
+        // 获取用户信息
+        User user = userDao.getUserByName(username);
+        if(user == null){
+            return ResponseEntityComponent.User_Exist;
+        }
+
+        if(!userDao.changeEmail(user.getId(),email)){
+            return ResponseEntityComponent.Update_Failed("user email");
+        }
+
+        new MailComponent().sendMail(email,null,user,"email");
+
+        Response response = new Response();
+        response.setValue(true);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     public ResponseEntity<Response> deleteUser(Long id) {
@@ -170,4 +256,5 @@ public class UserComponent {
         response.setValue(true);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }

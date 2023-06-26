@@ -31,6 +31,10 @@ public class ResponseEntityComponent {
         return new ResponseEntity<>(new Response("密码错误："+str),HttpStatus.OK);
     }
 
+    public static ResponseEntity<Response> verificationCode_Err() {
+        return new ResponseEntity<>(new Response("err : 验证码错误"),HttpStatus.OK);
+    }
+
     public static ResponseEntity<Response> Expired(String name) {
         return new ResponseEntity<>(new Response("err : "+name+"失去了有效性."),HttpStatus.OK);
     }

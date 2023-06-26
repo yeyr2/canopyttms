@@ -16,39 +16,46 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String username;
-
     private String password;
     private String sex;
     private Integer age;
     @TableField(value = "is_admin")
     private Boolean admin;
-
     private Double balance;//个人账号余额
-
     private Long phone;
-
     private String birthday;
     private String hobbies;
     private String description;
-
     private PermissionLevelEnum permissionLevel;
+    private String email;
     @TableLogic
     @JsonIgnoreProperties
     private Integer isDeleted;
 
     public boolean verify(){
-        this.setUsername(StringUtil.removeSpaces(this.getUsername()));
-        if ("".equals(this.getUsername())) {
-            return false;
+        if(this.getUsername() != null){
+            this.setUsername(StringUtil.removeSpaces(this.getUsername()));
+            if ("".equals(this.getUsername())) {
+                return false;
+            }
         }
 
         if(this.phone != null && String.valueOf(this.phone).length() < 11){
             return false;
         }
 
-        this.setSex(StringUtil.removeSpaces(this.getSex()));
-        if(!("男".equals(this.sex) || "女".equals(this.sex))){
-            return false;
+        if(this.getSex() != null){
+            this.setSex(StringUtil.removeSpaces(this.getSex()));
+            if(!("男".equals(this.sex) || "女".equals(this.sex))){
+                return false;
+            }
+        }
+
+        if(this.email != null){
+            this.setEmail(StringUtil.removeSpaces(this.email));
+            if(!Mail.formatCheck(this.email)){
+                return false;
+            }
         }
 
         if(age == null){

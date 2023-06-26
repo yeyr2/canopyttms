@@ -6,13 +6,14 @@ import com.ttms.enums.PermissionLevelEnum;
 import com.ttms.pojo.Response;
 import com.ttms.pojo.TokenAndT;
 import com.ttms.pojo.User;
-import com.ttms.tools.Sha256Util;
 import com.ttms.tools.TokenUtils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -64,7 +65,6 @@ public class UserController {
         if (TokenUtils.verify(token,true) == null) {
             return ResponseEntityComponent.Token_Err;
         }
-
 
         return userComponent.getUserByName(name,isAdmin);
     }
@@ -118,6 +118,30 @@ public class UserController {
         return userComponent.changeUserPwd(id,pwd);
     }
 
+    @PostMapping("/changeUserPwdByEmail")
+    public ResponseEntity<Response> changeUserPwdByEmail(@RequestBody ChangeUserPwd changeUserPwd) throws MessagingException, UnsupportedEncodingException {
+        String email = changeUserPwd.getEmail();
+        String yzm = changeUserPwd.getYzm();
+        String password = changeUserPwd.getPwd();
+
+        return userComponent.changeUserPwdByEmail(email,yzm,password);
+    }
+
+    @PostMapping("/changeEmail")
+    public ResponseEntity<Response> changeEmail(@RequestBody ChangeUserPwd changeUserPwd) throws MessagingException, UnsupportedEncodingException {
+        String email = changeUserPwd.getEmail();
+        String yzm = changeUserPwd.getYzm();
+        String username = changeUserPwd.getUsername();
+
+        return userComponent.changeEmail(username,email,yzm);
+    }
+
+    @PostMapping("/SendVerificationCode")
+    public ResponseEntity<Response> SendVerificationCode(@RequestBody ChangeUserPwd user) throws MessagingException, UnsupportedEncodingException {
+        String email = user.getEmail();
+        return userComponent.SendVerificationCode(email);
+    }
+
     @GetMapping("/deleteUser")
     public ResponseEntity<Response> deleteUser(@RequestParam("token") String token,@RequestParam("id") Long id) {
         Long uid = TokenUtils.decodeGetIdByToken(token);
@@ -143,5 +167,8 @@ class ChangeUserLevel{
 class ChangeUserPwd{
     private String token;
     private Long id;
+    private String username;
+    private String email;
     private String pwd;
+    private String yzm;
 }

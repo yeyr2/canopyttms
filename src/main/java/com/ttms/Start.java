@@ -40,7 +40,6 @@ public class Start {
 
         exception.scheduleAtFixedRate(()->{
             System.out.println("检测过期的演出计划以及对应的票和id");
-            Long time = Instant.now().toEpochMilli();
             try {
                 orderDao.selectIsExpired();
             } catch (Exception e) {
