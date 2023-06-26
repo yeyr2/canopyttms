@@ -22,25 +22,16 @@ spring:
       testWhileIdle: true
       testOnBorrow: false
       testOnReturn: false
-  web:
-    resources:
-      static-locations: /
+  mvc:
+    static-path-pattern: /**
 
 server:
-  port : 9090
-  servlet:
-    context-path: /
+  port : 8080
   address: 0.0.0.0
-
-logging:
-  level:
-    org:
-      springframework:
-        web: DEBUG
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
     auto-mapping-behavior: full
     auto-mapping-unknown-column-behavior: warning
